@@ -1,0 +1,69 @@
+= jhipster-13461
+
+https://github.com/jhipster/generator-jhipster/issues/13461
+
+== Running Sample
+
+Start the authorization server
+
+```bash
+cd authorization-server
+./gradlew bootRun
+```
+
+Start the resource server
+
+```bash
+cd resource-server
+./gradlew bootRun
+```
+
+Get an access token and then use it:
+
+```bash
+export TOKEN=$(curl -s -X POST messaging-client:secret@localhost:9000/oauth2/token -d "grant_type=client_credentials" -d "scope=message:read openid" | jq -r '.access_token')
+curl -s -H "Authorization: Bearer $TOKEN" localhost:7070 | jq
+{
+  "tokenValue": "eyJraWQiOiIyNGZkMmZhMy1iODhkLTQ3ZWYtYjA5OS1lNzBlMGUxZWUzODciLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJtZXNzYWdpbmctY2xpZW50IiwiYXVkIjoibWVzc2FnaW5nLWNsaWVudCIsIm5iZiI6MTY0ODA3NDUwMCwic2NvcGUiOlsibWVzc2FnZTpyZWFkIiwib3BlbmlkIl0sImlzcyI6Imh0dHA6XC9cL2xvY2FsaG9zdDo5MDAwIiwiZXhwIjoxNjQ4MDc0ODAwLCJpYXQiOjE2NDgwNzQ1MDB9.Wru2LCswktwPZOYrkD6s00Lw6DDVY4G-E7MPUcBeOlXVC8RZIJsZirUJrnbzSI7PpiP42KZZTBDvMSKnU3SOnXm2GOTMSLLHZw4VtdAUbuDB0P32kljKDnlS0rnyYbz_yAwr_SlY2IzFQusBo5bhVE5DrOiW58pdWNYkkDoonmwyZlywM2Vb0i1-Kf7gGWkyxfx2zE3u01daJd5BJET6eZPjL8lsdor0hWu9BcJNhyohUbPqCQSsdkId0ui9M_4m-WMO4id_kddbIKUTo7teY0HdDJaHt1mPkfeFIQmdsxzjn1Vj6_Rq9ks_UtnPmCu8KM3qrcbsWPFNfcSOf2j3rg",
+  "issuedAt": "2022-03-23T22:28:20Z",
+  "expiresAt": "2022-03-23T22:33:20Z",
+  "headers": {
+    "kid": "24fd2fa3-b88d-47ef-b099-e70e0e1ee387",
+    "alg": "RS256"
+  },
+  "claims": {
+    "sub": "messaging-client",
+    "aud": [
+      "messaging-client"
+    ],
+    "name": "Jane Doe",
+    "given_name": "Jane",
+    "family_name": "Doe",
+    "preferred_username": "j.doe",
+    "email": "janedoe@example.com",
+    "picture": "http://example.com/janedoe/me.jpg",
+    "nbf": "2022-03-23T22:28:20Z",
+    "scope": [
+      "message:read",
+      "openid"
+    ],
+    "iss": "http://localhost:9000",
+    "exp": "2022-03-23T22:33:20Z",
+    "iat": "2022-03-23T22:28:20Z"
+  },
+  "subject": "messaging-client",
+  "notBefore": "2022-03-23T22:28:20Z",
+  "issuer": "http://localhost:9000",
+  "audience": [
+    "messaging-client"
+  ],
+  "id": null
+}
+
+```
+
+== How it works?
+
+* The resource server decodes the JWT using a `ReactiveJwtDecoder`. 
+* We delegate to the https://github.com/rwinch/jhipster-13461/blob/0a57ade7983bb9bf0a4df550d7db9858fbcbacc5/resource-server/src/main/java/example/SecurityConfiguration.java#L71[original implementation] and then customize the response to include https://github.com/rwinch/jhipster-13461/blob/0a57ade7983bb9bf0a4df550d7db9858fbcbacc5/resource-server/src/main/java/example/SecurityConfiguration.java#L92[additional headers] retrieved from the https://github.com/rwinch/jhipster-13461/blob/0a57ade7983bb9bf0a4df550d7db9858fbcbacc5/authorization-server/src/main/java/example/MockUserInfoEndpointController.java#L9[mocked userinfo endpoint].
+
